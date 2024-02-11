@@ -3,7 +3,6 @@ package main
 import (
 	"backend/cmd/api/internal/models"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -78,8 +77,6 @@ func (app *application) authenticate(w http.ResponseWriter, r *http.Request) {
 	refreshCookie := app.auth.GetRefreshCookie(tokens.RefreshToken)
 	http.SetCookie(w, refreshCookie)
 
-	fmt.Println(refreshCookie)
-
 	app.writeJSON(w, http.StatusAccepted, tokens)
 }
 
@@ -125,6 +122,13 @@ func (app *application) refreshToken(w http.ResponseWriter, r *http.Request) {
 			http.SetCookie(w, app.auth.GetRefreshCookie(tokenPairs.RefreshToken))
 
 			app.writeJSON(w, http.StatusOK, tokenPairs)
+			return
 		}
 	}
+	w.WriteHeader(http.StatusUnauthorized)
+}
+
+func (app *application) logout(w http.ResponseWriter, r *http.Request) {
+	http.SetCookie(w, app.auth.GetExpiredRefreshCookie())
+	w.WriteHeader(http.StatusAccepted)
 }
