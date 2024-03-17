@@ -199,6 +199,34 @@ func (m *PostgresDBRepo) OneMovieForEdit(id int) (*models.Movie, []*models.Genre
 	return &movie, allGenres, nil
 }
 
+func (m *PostgresDBRepo) InsertMovie(movie models.Movie) (int, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
+	defer cancel()
+
+	stmt := `insert into movies (title, description, release_date, runtime,
+		mpaa_rating, created_at, updated_at, image)
+		values ($1, $2, $3, $4, $5, $6, $7, $8) returning id`
+
+	var newID int
+
+	err := m.DB.QueryRowContext(ctx, stmt,
+		movie.Title,
+		movie.Description,
+		movie.ReleaseDate,
+		movie.RunTime,
+		movie.MPAARating,
+		movie.CreatedAt,
+		movie, movie.UpdatedAt,
+		movie.Image,
+	).Scan(&newID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return newID, nil
+}
+
 func (m *PostgresDBRepo) AllGenres() ([]*models.Genre, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), dbTimeout)
 	defer cancel()
