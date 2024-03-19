@@ -205,9 +205,10 @@ func (app *application) AllGenres(w http.ResponseWriter, r *http.Request) {
 func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
 	var movie models.Movie
 
-	err := app.readJSON(w, r, movie)
+	err := app.readJSON(w, r, &movie)
 
 	if err != nil {
+		log.Println("Error reading JSON: ", err)
 		app.errorJSON(w, err)
 		return
 	}
