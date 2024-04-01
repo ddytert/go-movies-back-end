@@ -208,7 +208,6 @@ func (app *application) InsertMovie(w http.ResponseWriter, r *http.Request) {
 	err := app.readJSON(w, r, &movie)
 
 	if err != nil {
-		log.Println("Error reading JSON: ", err)
 		app.errorJSON(w, err)
 		return
 	}
@@ -251,7 +250,7 @@ func (app *application) getPoster(movie models.Movie) models.Movie {
 	}
 
 	client := &http.Client{}
-	theUrl := fmt.Sprintf("https://api.themoviedb.org/3/search/movie/?api_key=%s", app.APIKey)
+	theUrl := fmt.Sprintf("https://api.themoviedb.org/3/search/movie?api_key=%s", app.APIKey)
 
 	req, err := http.NewRequest("GET", theUrl+"&query="+url.QueryEscape(movie.Title), nil)
 	if err != nil {

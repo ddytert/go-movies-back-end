@@ -117,8 +117,6 @@ func (j *Auth) GetExpiredRefreshCookie() *http.Cookie {
 func (j *Auth) GetTokenFromHeaderAndVerify(w http.ResponseWriter, r *http.Request) (string, *Claims, error) {
 	w.Header().Add("Vary", "Authorization")
 
-	log.Println("Verify Token from Auth Header...")
-
 	// get auth header
 	authHeader := r.Header.Get("Authorization")
 
@@ -166,8 +164,6 @@ func (j *Auth) GetTokenFromHeaderAndVerify(w http.ResponseWriter, r *http.Reques
 		log.Println("Invalid Issuer")
 		return "", nil, errors.New("invalid issuer")
 	}
-
-	log.Println("Token is VALID")
 
 	return token, claims, nil
 }

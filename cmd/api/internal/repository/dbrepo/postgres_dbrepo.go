@@ -216,7 +216,7 @@ func (m *PostgresDBRepo) InsertMovie(movie models.Movie) (int, error) {
 		movie.RunTime,
 		movie.MPAARating,
 		movie.CreatedAt,
-		movie, movie.UpdatedAt,
+		movie.UpdatedAt,
 		movie.Image,
 	).Scan(&newID)
 
