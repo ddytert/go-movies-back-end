@@ -332,4 +332,3 @@ func (m *PostgresDBRepo) GetUserByID(id int) (*models.User, error) {
 
 	return &user, nil
 }
-
