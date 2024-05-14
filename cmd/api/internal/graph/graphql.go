@@ -88,17 +88,17 @@ func New(movies []*models.Movie) *Graph {
 				"id": &graphql.ArgumentConfig{
 					Type: graphql.Int,
 				},
-				Resolve: func(p grapql.ResolveParams) (interface{}, error) {
-					id, ok := p.Args["id"].(int)
-					if ok {
-						for _, movie := range movies {
-							if movie.ID == id {
-								return movie, nil
-							}
+			},
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				id, ok := p.Args["id"].(int)
+				if ok {
+					for _, movie := range movies {
+						if movie.ID == id {
+							return movie, nil
 						}
 					}
-					return nil, nil
-				},
+				}
+				return nil, nil
 			},
 		},
 	}
