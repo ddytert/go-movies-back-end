@@ -2,6 +2,7 @@ package graph
 
 import (
 	"backend/cmd/api/internal/models"
+	"errors"
 	"strings"
 
 	"github.com/graphql-go/graphql"
@@ -64,7 +65,7 @@ func New(movies []*models.Movie) *Graph {
 			Type:        graphql.NewList(movieType),
 			Description: "Search movies by title",
 			Args: graphql.FieldConfigArgument{
-				"title contains": &graphql.ArgumentConfig{
+				"titleContains": &graphql.ArgumentConfig{
 					Type: graphql.String,
 				},
 			},
@@ -89,8 +90,8 @@ func New(movies []*models.Movie) *Graph {
 					Type: graphql.Int,
 				},
 			},
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				id, ok := p.Args["id"].(int)
+			Resolve: func(params graphql.ResolveParams) (interface{}, error) {
+				id, ok := params.Args["id"].(int)
 				if ok {
 					for _, movie := range movies {
 						if movie.ID == id {
@@ -107,4 +108,21 @@ func New(movies []*models.Movie) *Graph {
 		fields:    fields,
 		movieType: movieType,
 	}
+}
+
+func (g *Graph) Query() (*graphql.Result, error) {
+	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: g.fields}
+	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+	schema, err := graphql.NewSchema(schemaConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	params := graphql.Params{Schema: schema, RequestString: g.QueryString}
+	resp := graphql.Do(params)
+	if len(resp.Errors) > 0 {
+		return nil, errors.New("error executing query")
+	}
+
+	return resp, nil
 }
